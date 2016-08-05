@@ -104,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean compareUserCredentials(Student student, String user, String password) {
-        if (!student.getName().equals(user)) {
+        if (!student.getName().equalsIgnoreCase(user)) {
             return false;
         }
-        if (!student.getPassword().equals(password)) {
+        if (!student.getPassword().equalsIgnoreCase(password)) {
             return false;
         }
         return true;
