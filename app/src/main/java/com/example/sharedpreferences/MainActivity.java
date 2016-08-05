@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivityTAG_";
 
+    public static final String STUDENT_BUNDLE_KEY = "STUDENT_BUNDLE_KEY";
+
     private String mUrl = "http://www.mocky.io/v2/57a4dfb40f0000821dc9a3b8";
 
     private EditText mEditTextUser;
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 for (Student student : students) {
                     Log.d(TAG, "onResponse: " + student.toString() + " " + mContext);
                     if (compareUserCredentials(student, user, password)) {
-                        goToDetailsActivity();
+                        goToDetailsActivity(student);
                         authenticated = true;
                         break;
                     }
@@ -95,8 +97,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void goToDetailsActivity() {
+    private void goToDetailsActivity(Student student) {
         Intent intent = new Intent(this, DetailsActivity.class);
+        intent.putExtra(STUDENT_BUNDLE_KEY, student);
         startActivity(intent);
     }
 
