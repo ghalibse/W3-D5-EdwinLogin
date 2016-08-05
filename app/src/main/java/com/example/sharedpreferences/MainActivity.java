@@ -1,9 +1,13 @@
 package com.example.sharedpreferences;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,10 +30,20 @@ public class MainActivity extends AppCompatActivity {
 
     private String mUrl = "http://www.mocky.io/v2/57a4dfb40f0000821dc9a3b8";
 
+    private EditText mEditTextUser;
+    private EditText mEditTextPassword;
+
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mContext = getApplicationContext();
+
+        mEditTextUser = (EditText) findViewById(R.id.a_main_user);
+        mEditTextPassword = (EditText) findViewById(R.id.a_main_pwd);
     }
 
     public void doMagic(View view) {
@@ -37,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         Request request = new Request.Builder()
                 .url(mUrl)
                 .build();
+
+        final String user = mEditTextUser.getText().toString();
+        final String password = mEditTextPassword.getText().toString();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -51,11 +68,45 @@ public class MainActivity extends AppCompatActivity {
                 Type listType = new TypeToken<List<Student>>() {
                 }.getType();
 
+                boolean authenticated = false;
+
                 ArrayList<Student> students = gson.fromJson(json, listType);
                 for (Student student : students) {
-                    Log.d(TAG, "onResponse: " + student.toString());
+                    Log.d(TAG, "onResponse: " + student.toString() + " " + mContext);
+                    if (compareUserCredentials(student, user, password)) {
+                        goToDetailsActivity();
+                        authenticated = true;
+                        break;
+                    }
+                }
+                if (!authenticated) {
+                    showFailedCredentials();
                 }
             }
         });
+    }
+
+    private void showFailedCredentials() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Wrong credentials", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void goToDetailsActivity() {
+        Intent intent = new Intent(this, DetailsActivity.class);
+        startActivity(intent);
+    }
+
+    private boolean compareUserCredentials(Student student, String user, String password) {
+        if (!student.getName().equals(user)) {
+            return false;
+        }
+        if (!student.getPassword().equals(password)) {
+            return false;
+        }
+        return true;
     }
 }

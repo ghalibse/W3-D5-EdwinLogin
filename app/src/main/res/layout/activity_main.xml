@@ -11,11 +11,13 @@
     tools:context="com.example.sharedpreferences.MainActivity">
 
     <EditText
+        android:id="@+id/a_main_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Username" />
 
     <EditText
+        android:id="@+id/a_main_pwd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
